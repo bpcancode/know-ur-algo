@@ -1,6 +1,9 @@
 ﻿using API.Dtos.Algorithm;
 using API.Dtos.Request;
+using API.Dtos.Visualizations;
 using API.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace API.Endpoints;
 
@@ -18,14 +21,21 @@ public static class EndPoints
         endpoints.MapGet("api/user", () => async () => TypedResults.Ok() );
 
         // Visualization Apis
-
-        endpoints.MapGet("api/visualization", () => TypedResults.Ok("Hello World"));
+        endpoints.MapGet("api/visualization", async (IVisualizationService service)
+            => TypedResults.Ok(await service.GetVisualizations()));
+        
+        endpoints.MapPost("api/visualization", 
+            [Authorize] async (VisualizationCreateDto dto , IVisualizationService service, ClaimsPrincipal user) 
+            => TypedResults.Ok(await service.CreateVisualization(dto, int.Parse(user.FindFirstValue(ClaimTypes.Email) ?? "0"))));
+        
+        endpoints.MapGet("api/visualization/{id}", async (IVisualizationService service, int id) 
+            => TypedResults.Ok(await service.GetVisualization(id)));
 
         // Algorithm endpoints
         endpoints.MapGet("api/algorithm", async (IAlgorithmService algorithmService) =>
             TypedResults.Ok(await algorithmService.GetAlgorithms()));
 
-        endpoints.MapPost("api/algorithm", async (AlgorithmCreateDto dto, IAlgorithmService algorithmService) =>
+        endpoints.MapPost("api/algorithm", [Authorize] async (AlgorithmCreateDto dto, IAlgorithmService algorithmService, ClaimsPrincipal user) =>
             TypedResults.Ok(await algorithmService.CreateDto(dto)));
 
         // Tags endpoints
@@ -36,4 +46,5 @@ public static class EndPoints
 
         return endpoints;
     }
+
 }

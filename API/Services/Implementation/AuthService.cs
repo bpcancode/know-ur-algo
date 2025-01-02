@@ -47,14 +47,10 @@ public class AuthService : IAuthService
         await _ufw.SaveChangesAsync();
         return GenerateAuthResponse(newUser);
     }
-
-
     private string GenerateHashedPassword(string password)
     {
         return BCrypt.Net.BCrypt.HashPassword(password, 12);
     }
-
-
     private ResultWithDataDto<AuthResponseDto> GenerateAuthResponse(User user)
     {
         var loggedInUser = new LoggedInUser(user.Id, user.Username);
