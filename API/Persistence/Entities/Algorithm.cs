@@ -7,6 +7,6 @@ public class Algorithm
     public int CourseId { get; set; }
 
     public Course Course { get; set; }
-    public ICollection<Visualization> Visualizations { get; set; } = new List<Visualization>();
+    public ICollection<Visualization> Visualizations { get; set; } = [];
     public ICollection<Tag> Tags { get; set; } = [];
 }
