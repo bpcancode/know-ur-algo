@@ -32,7 +32,7 @@ builder.Services.AddScoped<TokenService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite("Data Source=database.dat"));
+    options.UseSqlite("Data Source=database.db"));
 
 builder.Services.AddAuthentication(options =>
 {

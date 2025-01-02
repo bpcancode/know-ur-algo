@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,8 +64,8 @@ namespace API.Migrations
                     Title = table.Column<string>(type: "TEXT", nullable: false),
                     Code = table.Column<string>(type: "TEXT", nullable: false),
                     IsElective = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreditHour = table.Column<int>(type: "INTEGER", nullable: false),
-                    FullMark = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreditHours = table.Column<int>(type: "INTEGER", nullable: false),
+                    FullMarks = table.Column<int>(type: "INTEGER", nullable: false),
                     SemesterId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -136,8 +136,8 @@ namespace API.Migrations
                     AlgorithmId = table.Column<int>(type: "INTEGER", nullable: false),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     Status = table.Column<string>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    VoteCount = table.Column<int>(type: "INTEGER", nullable: false)
+                    Views = table.Column<long>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
