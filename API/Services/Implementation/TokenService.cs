@@ -24,7 +24,7 @@ public class TokenService(IConfiguration configuration)
     {
         var securityKey = GetSecurityKey(configuration);
 
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.Aes128CbcHmacSha256);
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         int expireMin = int.Parse(configuration["JWT:ExpiresInMinute"]!);
 
         Claim[] claims = [

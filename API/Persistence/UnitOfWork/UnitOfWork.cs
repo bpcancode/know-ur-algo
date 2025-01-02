@@ -13,6 +13,8 @@ public class UnitOfWork : IUnitOfWork
 
     public IAlgorithmRepo Algorithms {get; }
 
+    public IVisualizationRepo Visualizations {get; }
+
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
@@ -20,6 +22,7 @@ public class UnitOfWork : IUnitOfWork
         Courses = new CourseRepo(_context);
         Tags = new TagRepo(_context);
         Algorithms = new AlgorithmRepo(_context);
+        Visualizations = new VisualizationRepo(_context);
     }
 
 

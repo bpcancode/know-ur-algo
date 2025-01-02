@@ -12,19 +12,20 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Add interfaces to the container.
-
+// Add repositories to the container.
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ITagRepo, TagRepo>();
 builder.Services.AddScoped<ICourseRepo, CourseRepo>();
+builder.Services.AddScoped<IVisualizationRepo, VisualizationRepo>();
 builder.Services.AddScoped<IAlgorithmRepo, AlgorithmRepo>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Add services to the container.
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IAlgorithmService, AlgorithmService>();
+builder.Services.AddScoped<IVisualizationService, VisualizationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();
 
@@ -41,6 +42,8 @@ builder.Services.AddAuthentication(options =>
 }).AddJwtBearer(jwtOptions =>
     jwtOptions.TokenValidationParameters = TokenService.GetTokenValidationParameter(builder.Configuration));
 
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -52,6 +55,8 @@ app.MapScalarApiReference();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapEndPoints();
 
