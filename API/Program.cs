@@ -22,6 +22,8 @@ builder.Services.AddScoped<ICourseRepo, CourseRepo>();
 builder.Services.AddScoped<IAlgorithmRepo, AlgorithmRepo>();
 
 // Add services to the container.
+builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IAlgorithmService, AlgorithmService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();

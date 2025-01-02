@@ -1,11 +1,13 @@
-﻿namespace API.Dtos.Algorithm;
+﻿using API.Dtos.Course;
+using API.Dtos.Tag;
+
+namespace API.Dtos.Algorithm;
 
 public class AlgorithmDto
 {
     public int Id { get; set; }
     public string Title { get; set; }
-    public int CourseId { get; set; }
-    public string CourseTitle { get; set; }
-    public string[] Tags { get; set; }
+    public CourseDto Courses { get; set; }
+    public List<TagDto> Tags = [];
     public int VisualizationsCount { get; set; }
 }
