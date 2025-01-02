@@ -7,7 +7,7 @@ namespace API.Persistence.UnitOfWork;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
-    public UserRepo Users { get; }
+    public IUserRepo Users { get; }
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;

@@ -7,6 +7,4 @@ public class Vote
     public int UserId { get; set; }
     public DateTime VotedAt { get; set; } = DateTime.UtcNow;
 
-    public Visualization Visualization { get; set; }
-    public User User { get; set; }
 }

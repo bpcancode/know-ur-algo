@@ -12,10 +12,9 @@ public class Visualization
     public int AlgorithmId { get; set; }
     public int UserId { get; set; }
     public string Status { get; set; }
+    public long Views { get; set; }
     public DateTime CreatedAt { get; set; }
-    public int VoteCount { get; set; } = 0;
-
+    public List<Vote> Votes { get; set; } = [];
     public User User { get; set; }
     public Algorithm Algorithm { get; set; }
-    public ICollection<Vote> Votes { get; set; } = new List<Vote>();
 }

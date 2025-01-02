@@ -5,6 +5,6 @@ namespace API.Persistence.UnitOfWork;
 
 public interface IUnitOfWork : IDisposable
 {
-    UserRepo Users { get; }
+    IUserRepo Users { get; }
     Task<int> SaveChangesAsync();
 }

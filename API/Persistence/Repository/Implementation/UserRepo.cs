@@ -10,7 +10,6 @@ namespace API.Persistence.Repository.Implementation
         public UserRepo(ApplicationDbContext context) : base(context)
         {
         }
-
         public async Task<User?> GetByUserName(string userName)
         {
             var queryable = GetQueryable();

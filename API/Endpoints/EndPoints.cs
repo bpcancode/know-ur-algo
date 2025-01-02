@@ -13,6 +13,13 @@ public static class EndPoints
         endpoints.MapPost("api/signup", async (RegisterDto dto, IAuthService authService) =>
             TypedResults.Ok(await authService.RegisterAsync(dto)));
 
+        // User Apis
+        endpoints.MapGet("api/user", () => async () => TypedResults.Ok() );
+
+        // Visualization Apis
+
+        endpoints.MapGet("api/visualization", () => TypedResults.Ok("Hello World"));
+
         return endpoints;
     }
 }
