@@ -4,9 +4,8 @@
 ## Get latest from `dotnet new gitignore`
 
 ## sqlite files
-*.dat
-*.dat-wal
-*.dat-shm
+*.db-wal
+*.db-shm
 
 
 # dotenv files
