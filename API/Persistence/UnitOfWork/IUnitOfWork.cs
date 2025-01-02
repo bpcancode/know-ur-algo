@@ -9,5 +9,6 @@ public interface IUnitOfWork : IDisposable
     ICourseRepo Courses { get; }
     ITagRepo Tags { get; }
     IAlgorithmRepo Algorithms { get; }
+    IVisualizationRepo Visualizations { get; }
     Task<int> SaveChangesAsync();
 }

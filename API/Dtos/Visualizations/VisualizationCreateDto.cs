@@ -6,5 +6,5 @@ public class VisualizationCreateDto
     public string Css { get; set; }
     public string Js { get; set; }
     public string Title { get; set; }
-    public long AlgorithmId { get; set; }
+    public int AlgorithmId { get; set; }
 }

@@ -2,11 +2,9 @@
 using API.Dtos.Algorithm;
 using API.Dtos.Course;
 using API.Dtos.Tag;
-using API.Persistence.Context;
 using API.Persistence.Entities;
 using API.Persistence.UnitOfWork;
 using API.Services.Interface;
-using System.Reflection.Metadata.Ecma335;
 
 namespace API.Services.Implementation;
 
@@ -39,6 +37,7 @@ public class AlgorithmService : IAlgorithmService
             Title = dto.Title,
             Course = course,
             Tags = tags,
+            
         };
         try
         {
