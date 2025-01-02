@@ -1,4 +1,5 @@
-﻿using API.Dtos.Request;
+﻿using API.Dtos.Algorithm;
+using API.Dtos.Request;
 using API.Services.Interface;
 
 namespace API.Endpoints;
@@ -19,6 +20,19 @@ public static class EndPoints
         // Visualization Apis
 
         endpoints.MapGet("api/visualization", () => TypedResults.Ok("Hello World"));
+
+        // Algorithm endpoints
+        endpoints.MapGet("api/algorithm", async (IAlgorithmService algorithmService) =>
+            TypedResults.Ok(await algorithmService.GetAlgorithms()));
+
+        endpoints.MapPost("api/algorithm", async (AlgorithmCreateDto dto, IAlgorithmService algorithmService) =>
+            TypedResults.Ok(await algorithmService.CreateDto(dto)));
+
+        // Tags endpoints
+        endpoints.MapGet("api/tags", async (ITagService tagService) => TypedResults.Ok(await tagService.GetTags()));
+
+        // Course endpoints
+        endpoints.MapGet("api/courses", async (ICourseService courseService) => TypedResults.Ok(await courseService.GetCourses()));
 
         return endpoints;
     }

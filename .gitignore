@@ -3,6 +3,12 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+## sqlite files
+*.dat
+*.dat-wal
+*.dat-shm
+
+
 # dotenv files
 .env
 

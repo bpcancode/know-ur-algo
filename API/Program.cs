@@ -1,5 +1,4 @@
 using API.Endpoints;
-using API.MappingProfile;
 using API.Persistence.Context;
 using API.Persistence.Repository.Implementation;
 using API.Persistence.Repository.Interface;
@@ -13,10 +12,19 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 
+// Add interfaces to the container.
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<ITagRepo, TagRepo>();
+builder.Services.AddScoped<ICourseRepo, CourseRepo>();
+builder.Services.AddScoped<IAlgorithmRepo, AlgorithmRepo>();
 
+// Add services to the container.
+builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IAlgorithmService, AlgorithmService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();
 
