@@ -1,4 +1,5 @@
-﻿using API.Dtos.Request;
+﻿using API.Dtos.Algorithm;
+using API.Dtos.Request;
 using API.Services.Interface;
 
 namespace API.Endpoints;
@@ -19,6 +20,10 @@ public static class EndPoints
         // Visualization Apis
 
         endpoints.MapGet("api/visualization", () => TypedResults.Ok("Hello World"));
+
+        // Algorithm endpoints
+        endpoints.MapPost("api/algorithm", async (AlgorithmCreateDto dto, IAlgorithmService algorithmService) =>
+            TypedResults.Ok(await algorithmService.CreateDto(dto)));
 
         return endpoints;
     }

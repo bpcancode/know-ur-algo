@@ -44,10 +44,10 @@ public interface IRepository<TEntity> : IDisposable where TEntity : class
     Task<List<TEntity>> ListAsync(int page, int pageSize);
 
     // Returns an entity of type TEntity by its primary key from the database.
-    TEntity? Find(Guid id);
+    TEntity? Find(int id);
 
     // Returns an entity of type TEntity by its primary key from the database asynchronously.
-    Task<TEntity?> FindAsync(Guid id);
+    Task<TEntity?> FindAsync(int id);
 
     // Returns an IEnumerable of entities of type TEntity from the database.
     IEnumerable<TEntity> GetEnumerable();

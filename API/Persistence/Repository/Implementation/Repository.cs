@@ -1,4 +1,5 @@
-﻿using API.Persistence.Repository.Interface;
+﻿using API.Persistence.Context;
+using API.Persistence.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Persistence.Repository.Implementation;
@@ -6,10 +7,10 @@ namespace API.Persistence.Repository.Implementation;
 public class Repository<IEntity> : IRepository<IEntity> where IEntity : class
 {
 
-    protected readonly DbContext _context;
+    protected readonly ApplicationDbContext _context;
     private readonly DbSet<IEntity> _dbSet;
    
-    public Repository(DbContext context)
+    public Repository(ApplicationDbContext context)
     {
         _context = context;
         _dbSet = _context.Set<IEntity>();
@@ -26,9 +27,9 @@ public class Repository<IEntity> : IRepository<IEntity> where IEntity : class
 
     public void Dispose() => _context.Dispose();
 
-    public IEntity? Find(Guid id) => _dbSet.Find(id);
+    public IEntity? Find(int id) => _dbSet.Find(id);
 
-    public async Task<IEntity?> FindAsync(Guid id) => await _dbSet.FindAsync(id);
+    public async Task<IEntity?> FindAsync(int id) => await _dbSet.FindAsync(id);
 
     public IAsyncEnumerable<IEntity> GetAsyncEnumerable() => _dbSet.AsAsyncEnumerable();
 

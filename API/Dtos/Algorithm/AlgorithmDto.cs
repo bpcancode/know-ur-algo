@@ -1,6 +1,6 @@
 ﻿namespace API.Dtos.Algorithm;
 
-public class AlgorithmListDto
+public class AlgorithmDto
 {
     public int Id { get; set; }
     public string Title { get; set; }
