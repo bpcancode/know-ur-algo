@@ -12,6 +12,17 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin()  // Allows all origins
+              .AllowAnyMethod()  // Allows all HTTP methods
+              .AllowAnyHeader(); // Allows all headers
+    });
+});
+
 // Add repositories to the container.
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
@@ -50,6 +61,7 @@ var app = builder.Build();
 //if (app.Environment.IsDevelopment())
 //{
 //}
+app.UseCors("AllowAllOrigins");
 app.MapOpenApi();
 app.MapScalarApiReference();
 
