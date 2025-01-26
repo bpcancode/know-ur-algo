@@ -5,7 +5,7 @@ namespace API.Services.Interface
 {
     public interface IVisualizationService
     {
-        public Task<ResultWithDataDto<List<VisualizationDto>>> GetVisualizations();
+        public Task<ResultWithDataDto<List<VisualizationDto>>> GetVisualizations(VisualizationFilters filters);
         public Task<ResultWithDataDto<VisualizationDto>> GetVisualization(int id);
         public Task<ResultDto> CreateVisualization(VisualizationCreateDto dto, int userId);
     }
