@@ -3,6 +3,7 @@ using API.Dtos.Request;
 using API.Dtos.Visualizations;
 using API.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace API.Endpoints;
@@ -21,8 +22,8 @@ public static class EndPoints
         endpoints.MapGet("api/user", () => async () => TypedResults.Ok() );
 
         // Visualization Apis
-        endpoints.MapGet("api/visualization", async (IVisualizationService service)
-            => TypedResults.Ok(await service.GetVisualizations()));
+        endpoints.MapGet("api/visualization", async (IVisualizationService service,[AsParameters] VisualizationFilters filters)
+            => TypedResults.Ok(await service.GetVisualizations(filters)));
         
         endpoints.MapPost("api/visualization", 
             [Authorize] async (VisualizationCreateDto dto , IVisualizationService service, ClaimsPrincipal user) 

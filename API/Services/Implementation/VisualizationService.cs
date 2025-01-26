@@ -6,16 +6,13 @@ using API.Dtos.Visualizations;
 using API.Persistence.Entities;
 using API.Persistence.UnitOfWork;
 using API.Services.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Services.Implementation;
 
-public class VisualizationService : IVisualizationService
+public class VisualizationService(IUnitOfWork wof) : IVisualizationService
 {
-    private readonly IUnitOfWork _wof;
-    public VisualizationService(IUnitOfWork wof)
-    {
-        _wof = wof;
-    }
+    private readonly IUnitOfWork _wof = wof;
 
     public async Task<ResultDto> CreateVisualization(VisualizationCreateDto dto, int userId)
     {
@@ -37,11 +34,10 @@ public class VisualizationService : IVisualizationService
         await _wof.SaveChangesAsync();
         return new ResultDto(true, "Visualization created successfully");
     }
-
     public async Task<ResultWithDataDto<VisualizationDto>> GetVisualization(int id)
     {
         var visualization = await _wof.Visualizations.FindAsync(id);
-        if (visualization is null) return new ResultWithDataDto<VisualizationDto>(false, null, "Visualization not found");
+        if (visualization is null) return new ResultWithDataDto<VisualizationDto>(false, default, "Visualization not found");
         var dto = new VisualizationDto
         {
             Id = visualization.Id,
@@ -53,13 +49,24 @@ public class VisualizationService : IVisualizationService
             Html = visualization.Html,
             VoteCount = visualization.Votes.Count,
         };
+        visualization.Views++;
+        await _wof.SaveChangesAsync();
         return new ResultWithDataDto<VisualizationDto>(true, dto, null);
     }
-
-    public async Task<ResultWithDataDto<List<VisualizationDto>>> GetVisualizations()
+    public async Task<ResultWithDataDto<List<VisualizationDto>>> GetVisualizations(VisualizationFilters filters)
     {
-        var visualizations = await _wof.Visualizations.ListAsync();
-        var dtos = visualizations.Select(x => new VisualizationDto
+        
+        var query = _wof.Visualizations.GetQueryable();
+
+        if (filters.FromDate.HasValue) query = query.Where(x => x.CreatedAt >= filters.FromDate);
+        if (filters.ToDate.HasValue) query = query.Where(x => x.CreatedAt <= filters.FromDate);
+        if (filters.LikeGreaterThan.HasValue) query = query.Where(x => x.Votes.Count >= filters.LikeGreaterThan);
+        if (filters.LikeLessThan.HasValue) query = query.Where(x => x.Votes.Count <= filters.LikeGreaterThan);
+        if (filters.ViewCountGreaterThan.HasValue) query = query.Where(x => x.Views >= filters.ViewCountGreaterThan);
+        if (filters.ViewCountLessThan.HasValue) query = query.Where(x => x.Views <= filters.ViewCountLessThan);
+        if (filters.IsTrending.HasValue) query = OrderByTrend(query);
+
+        var res = await query.Select(x => new VisualizationDto
         {
             Id = x.Id,
             Title = x.Title,
@@ -69,8 +76,18 @@ public class VisualizationService : IVisualizationService
             Css = x.Css,
             Html = x.Html,
             VoteCount = x.Votes.Count,
-        }).ToList();
-        return new ResultWithDataDto<List<VisualizationDto>>(true, dtos, null);
+        }).ToListAsync();
+        return new ResultWithDataDto<List<VisualizationDto>>(true, res, null);
+    }
+    private IQueryable<Visualization> OrderByTrend(IQueryable<Visualization> query)
+    {
+        int a_views = 15000;
+        int b_likes = 200;
+        int c_age = 50;
+
+        query = query.OrderByDescending(x => (x.Views / a_views) + (x.Votes.Count * b_likes) + (DateTime.Now - x.CreatedAt).Days / c_age);
+
+        return query;
     }
 
 }
