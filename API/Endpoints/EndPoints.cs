@@ -22,7 +22,7 @@ public static class EndPoints
         endpoints.MapGet("api/user", () => async () => TypedResults.Ok() );
 
         // Visualization Apis
-        endpoints.MapGet("api/visualization", async (IVisualizationService service,[AsParameters] VisualizationFilters filters)
+        endpoints.MapGet("api/visualization", async (IVisualizationService service, [AsParameters] VisualizationFilters filters)
             => TypedResults.Ok(await service.GetVisualizations(filters)));
         
         endpoints.MapPost("api/visualization", 
