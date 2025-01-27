@@ -1,7 +1,5 @@
 ﻿using API.Dtos;
-using API.Dtos.Algorithm;
-using API.Dtos.Course;
-using API.Dtos.Tag;
+
 using API.Dtos.Visualizations;
 using API.Persistence.Entities;
 using API.Persistence.UnitOfWork;
@@ -64,6 +62,7 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
         if (filters.LikeLessThan.HasValue) query = query.Where(x => x.Votes.Count <= filters.LikeGreaterThan);
         if (filters.ViewCountGreaterThan.HasValue) query = query.Where(x => x.Views >= filters.ViewCountGreaterThan);
         if (filters.ViewCountLessThan.HasValue) query = query.Where(x => x.Views <= filters.ViewCountLessThan);
+        if (filters.AlgorithmId.HasValue) query = query.Where(x => x.AlgorithmId == filters.AlgorithmId);
         if (filters.IsTrending.HasValue) query = OrderByTrend(query);
 
         var res = await query.Select(x => new VisualizationDto

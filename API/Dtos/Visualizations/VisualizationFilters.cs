@@ -12,14 +12,6 @@ public class VisualizationFilters
     public long? LikeLessThan { get; set; }
     public long? ViewCountGreaterThan { get; set; }
     public long? ViewCountLessThan { get; set; }
+    public long? AlgorithmId { get; set; }
 
-    public static VisualizationFilters Parse(string s, IFormatProvider? provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out VisualizationFilters result)
-    {
-        throw new NotImplementedException();
-    }
 }
