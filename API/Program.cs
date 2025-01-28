@@ -61,11 +61,11 @@ var app = builder.Build();
 //if (app.Environment.IsDevelopment())
 //{
 //}
-app.UseCors("AllowAllOrigins");
 app.MapOpenApi();
 app.MapScalarApiReference();
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
