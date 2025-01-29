@@ -16,7 +16,8 @@ public class Visualization
     public int UserId { get; set; }
     public string Status = StatusActive;
     public long Views { get; set; }
-    public DateTime CreatedAt = DateTime.UtcNow;
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public List<Vote> Votes { get; set; } = [];
     public User User { get; set; }
     public Algorithm Algorithm { get; set; }

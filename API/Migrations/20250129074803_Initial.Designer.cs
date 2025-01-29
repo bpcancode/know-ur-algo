@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250102132509_initial")]
-    partial class initial
+    [Migration("20250129074803_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
 
             modelBuilder.Entity("API.Persistence.Entities.Algorithm", b =>
                 {
@@ -26,7 +26,7 @@ namespace API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CourseId")
+                    b.Property<int?>("TagId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
@@ -35,63 +35,9 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("TagId");
 
                     b.ToTable("Algorithms");
-                });
-
-            modelBuilder.Entity("API.Persistence.Entities.Course", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("CreditHours")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("FullMarks")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsElective")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("SemesterId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SemesterId");
-
-                    b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("API.Persistence.Entities.Semester", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("TotalCreditHour")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TotalFullMark")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Semesters");
                 });
 
             modelBuilder.Entity("API.Persistence.Entities.Tag", b =>
@@ -159,10 +105,6 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -191,7 +133,7 @@ namespace API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("VisualizationId")
+                    b.Property<int?>("VisualizationId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("VotedAt")
@@ -206,41 +148,11 @@ namespace API.Migrations
                     b.ToTable("Votes");
                 });
 
-            modelBuilder.Entity("AlgorithmTag", b =>
-                {
-                    b.Property<int>("AlgorithmsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("AlgorithmsId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("AlgorithmTag");
-                });
-
             modelBuilder.Entity("API.Persistence.Entities.Algorithm", b =>
                 {
-                    b.HasOne("API.Persistence.Entities.Course", "Course")
+                    b.HasOne("API.Persistence.Entities.Tag", null)
                         .WithMany("Algorithms")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-                });
-
-            modelBuilder.Entity("API.Persistence.Entities.Course", b =>
-                {
-                    b.HasOne("API.Persistence.Entities.Semester", "Semester")
-                        .WithMany("Courses")
-                        .HasForeignKey("SemesterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Semester");
+                        .HasForeignKey("TagId");
                 });
 
             modelBuilder.Entity("API.Persistence.Entities.Visualization", b =>
@@ -264,7 +176,7 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Persistence.Entities.Vote", b =>
                 {
-                    b.HasOne("API.Persistence.Entities.User", null)
+                    b.HasOne("API.Persistence.Entities.User", "User")
                         .WithMany("Votes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -272,24 +184,9 @@ namespace API.Migrations
 
                     b.HasOne("API.Persistence.Entities.Visualization", null)
                         .WithMany("Votes")
-                        .HasForeignKey("VisualizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                        .HasForeignKey("VisualizationId");
 
-            modelBuilder.Entity("AlgorithmTag", b =>
-                {
-                    b.HasOne("API.Persistence.Entities.Algorithm", null)
-                        .WithMany()
-                        .HasForeignKey("AlgorithmsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Persistence.Entities.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API.Persistence.Entities.Algorithm", b =>
@@ -297,14 +194,9 @@ namespace API.Migrations
                     b.Navigation("Visualizations");
                 });
 
-            modelBuilder.Entity("API.Persistence.Entities.Course", b =>
+            modelBuilder.Entity("API.Persistence.Entities.Tag", b =>
                 {
                     b.Navigation("Algorithms");
-                });
-
-            modelBuilder.Entity("API.Persistence.Entities.Semester", b =>
-                {
-                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("API.Persistence.Entities.User", b =>

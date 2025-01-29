@@ -27,14 +27,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<ITagRepo, TagRepo>();
-builder.Services.AddScoped<ICourseRepo, CourseRepo>();
 builder.Services.AddScoped<IVisualizationRepo, VisualizationRepo>();
 builder.Services.AddScoped<IAlgorithmRepo, AlgorithmRepo>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Add services to the container.
 builder.Services.AddScoped<ITagService, TagService>();
-builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IAlgorithmService, AlgorithmService>();
 builder.Services.AddScoped<IVisualizationService, VisualizationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -45,6 +43,8 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite("Data Source=database.db"));
+
+
 
 builder.Services.AddAuthentication(options =>
 {

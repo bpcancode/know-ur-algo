@@ -6,26 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Semesters",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    TotalCreditHour = table.Column<int>(type: "INTEGER", nullable: false),
-                    TotalFullMark = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Semesters", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
@@ -56,71 +41,22 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Courses",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    Code = table.Column<string>(type: "TEXT", nullable: false),
-                    IsElective = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreditHours = table.Column<int>(type: "INTEGER", nullable: false),
-                    FullMarks = table.Column<int>(type: "INTEGER", nullable: false),
-                    SemesterId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Courses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Courses_Semesters_SemesterId",
-                        column: x => x.SemesterId,
-                        principalTable: "Semesters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Algorithms",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Title = table.Column<string>(type: "TEXT", nullable: false),
-                    CourseId = table.Column<int>(type: "INTEGER", nullable: false)
+                    TagId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Algorithms", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Algorithms_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AlgorithmTag",
-                columns: table => new
-                {
-                    AlgorithmsId = table.Column<int>(type: "INTEGER", nullable: false),
-                    TagsId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AlgorithmTag", x => new { x.AlgorithmsId, x.TagsId });
-                    table.ForeignKey(
-                        name: "FK_AlgorithmTag_Algorithms_AlgorithmsId",
-                        column: x => x.AlgorithmsId,
-                        principalTable: "Algorithms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AlgorithmTag_Tags_TagsId",
-                        column: x => x.TagsId,
+                        name: "FK_Algorithms_Tags_TagId",
+                        column: x => x.TagId,
                         principalTable: "Tags",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -135,7 +71,6 @@ namespace API.Migrations
                     Js = table.Column<string>(type: "TEXT", nullable: false),
                     AlgorithmId = table.Column<int>(type: "INTEGER", nullable: false),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Status = table.Column<string>(type: "TEXT", nullable: false),
                     Views = table.Column<long>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -162,9 +97,9 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    VisualizationId = table.Column<int>(type: "INTEGER", nullable: false),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    VotedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    VotedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    VisualizationId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -179,24 +114,13 @@ namespace API.Migrations
                         name: "FK_Votes_Visualizations_VisualizationId",
                         column: x => x.VisualizationId,
                         principalTable: "Visualizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Algorithms_CourseId",
+                name: "IX_Algorithms_TagId",
                 table: "Algorithms",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AlgorithmTag_TagsId",
-                table: "AlgorithmTag",
-                column: "TagsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Courses_SemesterId",
-                table: "Courses",
-                column: "SemesterId");
+                column: "TagId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Visualizations_AlgorithmId",
@@ -223,13 +147,7 @@ namespace API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AlgorithmTag");
-
-            migrationBuilder.DropTable(
                 name: "Votes");
-
-            migrationBuilder.DropTable(
-                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "Visualizations");
@@ -241,10 +159,7 @@ namespace API.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Courses");
-
-            migrationBuilder.DropTable(
-                name: "Semesters");
+                name: "Tags");
         }
     }
 }

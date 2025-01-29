@@ -22,15 +22,19 @@ public static class EndPoints
         endpoints.MapGet("api/user", () => async () => TypedResults.Ok() );
 
         // Visualization Apis
-        endpoints.MapGet("api/visualization", async (IVisualizationService service, [AsParameters] VisualizationFilters filters)
-            => TypedResults.Ok(await service.GetVisualizations(filters)));
+        endpoints.MapGet("api/visualization", async (IVisualizationService service, [AsParameters] VisualizationFilters filters, ClaimsPrincipal user)
+            => TypedResults.Ok(await service.GetVisualizations(filters, int.Parse(user.FindFirstValue(ClaimTypes.Email) ?? "0"))));
         
         endpoints.MapPost("api/visualization", 
             [Authorize] async (VisualizationCreateDto dto , IVisualizationService service, ClaimsPrincipal user) 
             => TypedResults.Ok(await service.CreateVisualization(dto, int.Parse(user.FindFirstValue(ClaimTypes.Email) ?? "0"))));
-        
-        endpoints.MapGet("api/visualization/{id}", async (IVisualizationService service, int id) 
-            => TypedResults.Ok(await service.GetVisualization(id)));
+
+        endpoints.MapPost("api/visualization/{id}",
+            [Authorize] async (int id, IVisualizationService service, ClaimsPrincipal user)
+            => TypedResults.Ok(await service.LikeVisualization(id, int.Parse(user.FindFirstValue(ClaimTypes.Email) ?? "0"))));
+
+        endpoints.MapGet("api/visualization/{id}", async (IVisualizationService service, int id, ClaimsPrincipal user) 
+            => TypedResults.Ok(await service.GetVisualization(id, int.Parse(user.FindFirstValue(ClaimTypes.Email) ?? "0"))));
 
         // Algorithm endpoints
         endpoints.MapGet("api/algorithm", async (IAlgorithmService algorithmService) =>
@@ -43,7 +47,7 @@ public static class EndPoints
         endpoints.MapGet("api/tags", async (ITagService tagService) => TypedResults.Ok(await tagService.GetTags()));
 
         // Course endpoints
-        endpoints.MapGet("api/courses", async (ICourseService courseService) => TypedResults.Ok(await courseService.GetCourses()));
+        // endpoints.MapGet("api/courses", async (ICourseService courseService) => TypedResults.Ok(await courseService.GetCourses()));
 
         return endpoints;
     }

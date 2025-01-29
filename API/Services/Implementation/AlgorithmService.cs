@@ -1,6 +1,5 @@
 ﻿using API.Dtos;
 using API.Dtos.Algorithm;
-using API.Dtos.Course;
 using API.Dtos.Tag;
 using API.Persistence.Entities;
 using API.Persistence.UnitOfWork;
@@ -17,27 +16,11 @@ public class AlgorithmService : IAlgorithmService
     }
     public async Task<ResultDto> CreateDto(AlgorithmCreateDto dto)
     {
-        var course = await _wof.Courses.FindAsync(dto.CourseId);
-        if (course is null)
-        {
-            return new ResultDto(false, "Course not found");
-        }
-        List<Tag> tags = [];
-        foreach (var tagId in dto.TagIds)
-        {
-            var tag = await _wof.Tags.FindAsync(tagId);
-            if(tag is null)
-            {
-                return new ResultDto(false, "Tag not found");
-            }
-            tags.Add(tag);
-        }
+      
+        
         var algorithm = new Algorithm
         {
             Title = dto.Title,
-            Course = course,
-            Tags = tags,
-            
         };
         try
         {
@@ -59,17 +42,8 @@ public class AlgorithmService : IAlgorithmService
         {
            Id = x.Id,
            Title = x.Title,
-           Courses = new CourseDto
-           {
-               Id = x.Course.Id,
-               Title = x.Course.Title,
-           },
-           Tags = x.Tags.Select(tag => new TagDto
-           {
-               Id = tag.Id,
-               Name = tag.Name,
-           }).ToList(),
         }).ToList();
         return new ResultWithDataDto<List<AlgorithmDto>>(true, dtos, null);
     }
+
 }

@@ -8,7 +8,6 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
     public IUserRepo Users { get; }
-    public ICourseRepo Courses { get;  }
     public ITagRepo Tags { get; }
 
     public IAlgorithmRepo Algorithms {get; }
@@ -19,7 +18,6 @@ public class UnitOfWork : IUnitOfWork
     {
         _context = context;
         Users = new UserRepo(_context);
-        Courses = new CourseRepo(_context);
         Tags = new TagRepo(_context);
         Algorithms = new AlgorithmRepo(_context);
         Visualizations = new VisualizationRepo(_context);
