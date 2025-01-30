@@ -14,6 +14,7 @@ public class Visualization
     public string Js { get; set; }
     public int AlgorithmId { get; set; }
     public int UserId { get; set; }
+
     public string Status = StatusActive;
     public long Views { get; set; }
 

@@ -34,7 +34,13 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
     }
     public async Task<ResultWithDataDto<VisualizationDto>> GetVisualization(int id, int userId=0 )
     {
-        var visualization = await _wof.Visualizations.FindAsync(id);
+        var que = _wof.Visualizations.GetQueryable();
+        var visualization = await que
+            .Include(x => x.User)
+            .Include(x => x.Votes)
+            .Include(x => x.Algorithm)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
         if (visualization is null) return new ResultWithDataDto<VisualizationDto>(false, default, "Visualization not found");
         var dto = new VisualizationDto
         {
@@ -47,6 +53,7 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
             Html = visualization.Html,
             VoteCount = visualization.Votes.Count,
             IsVoted = visualization.Votes.Any(x => x.UserId == userId),
+            Views = visualization.Views,
         };
         visualization.Views++;
         await _wof.SaveChangesAsync();
@@ -64,6 +71,9 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
         if (filters.ViewCountGreaterThan.HasValue) query = query.Where(x => x.Views >= filters.ViewCountGreaterThan);
         if (filters.ViewCountLessThan.HasValue) query = query.Where(x => x.Views <= filters.ViewCountLessThan);
         if (filters.AlgorithmId.HasValue) query = query.Where(x => x.AlgorithmId == filters.AlgorithmId);
+        if (filters.IsViewsDecending.HasValue) query = query.OrderByDescending(x => x.Views);
+        if (filters.IsVoteDecending.HasValue) query = query.OrderByDescending(x => x.Votes.Count);
+
 
         var res = await query.Select(x => new VisualizationDto
         {
@@ -75,6 +85,7 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
             Css = x.Css,
             Html = x.Html,
             VoteCount = x.Votes.Count,
+            Views = x.Views,
             IsVoted = x.Votes.Any(x => x.UserId == userId),
             TrendScore = (x.Views / 15000) + (x.Votes.Count * 200) + (DateTime.Now - x.CreatedAt).Days / 50,
         }).ToListAsync();

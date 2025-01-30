@@ -13,5 +13,7 @@ public class VisualizationFilters
     public long? ViewCountGreaterThan { get; set; }
     public long? ViewCountLessThan { get; set; }
     public long? AlgorithmId { get; set; }
+    public bool? IsViewsDecending { get; set; }
+    public bool? IsVoteDecending { get; set; }
 
 }
