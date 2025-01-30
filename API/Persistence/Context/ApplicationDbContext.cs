@@ -1,411 +1,218 @@
 ﻿using API.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Persistence.Context
+namespace API.Persistence.Context;
+
+public class ApplicationDbContext : DbContext
 {
-    public class ApplicationDbContext : DbContext
+    public DbSet<User> Users { get; set; }
+    public DbSet<Visualization> Visualizations { get; set; }
+    public DbSet<Vote> Votes { get; set; }
+    public DbSet<Algorithm> Algorithms { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> context) : base(context)
     {
-        public DbSet<User> Users { get; set; }
-        public DbSet<Visualization> Visualizations { get; set; }
-        public DbSet<Vote> Votes { get; set; }
-        public DbSet<Algorithm> Algorithms { get; set; }
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<Semester> Semesters { get; set; }
-        public DbSet<Course> Courses { get; set; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> context) : base(context)
-        {
+    }
 
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     => optionsBuilder
         .UseSeeding((context, _) =>
         {
-            var testBlog = context.Set<User>().FirstOrDefault();
-            if (testBlog == null)
+            List<User> users = [
+                new () { Username = "admin", Password = BCrypt.Net.BCrypt.HashPassword("admin", 12) , Role = "Admin" },
+                new () { Username = "john_doe", Password = BCrypt.Net.BCrypt.HashPassword("user", 12) , Role = "User" },
+                new () { Username = "hari", Password = BCrypt.Net.BCrypt.HashPassword("user", 12), Role = "User" },
+                new () { Username = "bishal", Password = BCrypt.Net.BCrypt.HashPassword("user", 12), Role = "User" },
+                new () { Username = "arun", Password = BCrypt.Net.BCrypt.HashPassword("user", 12), Role = "User" },
+                new () { Username = "madhuri", Password = BCrypt.Net.BCrypt.HashPassword("user", 12), Role = "User" },
+            ];
+
+            List<Algorithm> algorithms = [
+                new () { Title = "Bubble Sort"},
+                new () { Title = "Quick Sort"},
+                new () { Title = "Merge Sort"},
+                new () { Title = "Insertion Sort"},
+                new () { Title = "Selection Sort"},
+                new () { Title = "Heap Sort" },
+                new () { Title = "Radix Sort" },
+            ];
+
+            Random ran = new Random();
+            
+
+
+
+            List<Visualization> visualizationsUser1 = [
+                new () { Algorithm=algorithms[0], User=users[0], Title = "Bubble Sort Visualization", Html = "<div class=\"container\">\r\n        <h2>Bubble Sort Visualization</h2>\r\n        <div id=\"array-container\"></div>\r\n        <button id=\"start-btn\">Start</button>\r\n    </div>", Css = "body {\r\n    font-family: Arial, sans-serif;\r\n    text-align: center;\r\n    background-color: #f4f4f4;\r\n}\r\n\r\n.container {\r\n    margin-top: 50px;\r\n}\r\n\r\n#array-container {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: flex-end;\r\n    height: 300px;\r\n    margin: 20px auto;\r\n}\r\n\r\n.bar {\r\n    width: 30px;\r\n    margin: 2px;\r\n    background-color: steelblue;\r\n    display: inline-block;\r\n    transition: height 0.3s ease-in-out;\r\n}\r\n\r\n.sorted {\r\n    background-color: green !important;\r\n}\r\n\r\n.comparing {\r\n    background-color: red !important;\r\n}\r\n\r\nbutton {\r\n    padding: 10px 20px;\r\n    font-size: 16px;\r\n    cursor: pointer;\r\n    border: none;\r\n    background-color: #007bff;\r\n    color: white;\r\n    border-radius: 5px;\r\n    margin-top: 20px;\r\n}\r\n\r\nbutton:hover {\r\n    background-color: #0056b3;\r\n}\r\n", Js = "document.getElementById(\"start-btn\").addEventListener(\"click\", startBubbleSort);\r\n\r\nconst arrayContainer = document.getElementById(\"array-container\");\r\nlet values = [40, 10, 30, 80, 50, 70, 20, 60];\r\n\r\nfunction createBars() {\r\n    arrayContainer.innerHTML = \"\";\r\n    values.forEach((value) => {\r\n        let bar = document.createElement(\"div\");\r\n        bar.classList.add(\"bar\");\r\n        bar.style.height = value * 3 + \"px\";\r\n        arrayContainer.appendChild(bar);\r\n    });\r\n}\r\n\r\nasync function bubbleSort() {\r\n    let bars = document.getElementsByClassName(\"bar\");\r\n    for (let i = 0; i < values.length - 1; i++) {\r\n        for (let j = 0; j < values.length - i - 1; j++) {\r\n            bars[j].classList.add(\"comparing\");\r\n            bars[j + 1].classList.add(\"comparing\");\r\n            await sleep(300);\r\n            \r\n            if (values[j] > values[j + 1]) {\r\n                [values[j], values[j + 1]] = [values[j + 1], values[j]];\r\n                bars[j].style.height = values[j] * 3 + \"px\";\r\n                bars[j + 1].style.height = values[j + 1] * 3 + \"px\";\r\n            }\r\n            \r\n            bars[j].classList.remove(\"comparing\");\r\n            bars[j + 1].classList.remove(\"comparing\");\r\n        }\r\n        bars[values.length - i - 1].classList.add(\"sorted\");\r\n    }\r\n    bars[0].classList.add(\"sorted\");\r\n}\r\n\r\nfunction startBubbleSort() {\r\n    createBars();\r\n    bubbleSort();\r\n}\r\n\r\nfunction sleep(ms) {\r\n    return new Promise(resolve => setTimeout(resolve, ms));\r\n}\r\n\r\ncreateBars();\r\n", Views = ran.Next(10,500) , Votes=[new(){User = users[0] }, new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[1], User=users[0], Title = "Quick Sort Visualization", Html = " <div class=\"container\">\r\n        <h2>Quick Sort Visualization</h2>\r\n        <div id=\"array-container\"></div>\r\n        <button id=\"start-btn\">Start</button>\r\n    </div>\r\n    <script src=\"quick_sort.js\"></script>", Css = "body {\r\n    font-family: Arial, sans-serif;\r\n    text-align: center;\r\n    background-color: #f4f4f4;\r\n}\r\n\r\n.container {\r\n    margin-top: 50px;\r\n}\r\n\r\n#array-container {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: flex-end;\r\n    height: 300px;\r\n    margin: 20px auto;\r\n}\r\n\r\n.bar {\r\n    width: 30px;\r\n    margin: 2px;\r\n    background-color: steelblue;\r\n    display: inline-block;\r\n    transition: height 0.3s ease-in-out;\r\n}\r\n\r\n.pivot {\r\n    background-color: orange !important;\r\n}\r\n\r\n.comparing {\r\n    background-color: red !important;\r\n}\r\n\r\n.sorted {\r\n    background-color: green !important;\r\n}\r\n\r\nbutton {\r\n    padding: 10px 20px;\r\n    font-size: 16px;\r\n    cursor: pointer;\r\n    border: none;\r\n    background-color: #007bff;\r\n    color: white;\r\n    border-radius: 5px;\r\n    margin-top: 20px;\r\n}\r\n\r\nbutton:hover {\r\n    background-color: #0056b3;\r\n}\r\n", Js = "document.getElementById(\"start-btn\").addEventListener(\"click\", startQuickSort);\r\n\r\nconst arrayContainer = document.getElementById(\"array-container\");\r\nlet values = [40, 10, 30, 80, 50, 70, 20, 60];\r\n\r\nfunction createBars() {\r\n    arrayContainer.innerHTML = \"\";\r\n    values.forEach((value) => {\r\n        let bar = document.createElement(\"div\");\r\n        bar.classList.add(\"bar\");\r\n        bar.style.height = value * 3 + \"px\";\r\n        arrayContainer.appendChild(bar);\r\n    });\r\n}\r\n\r\nasync function quickSort(start, end) {\r\n    if (start >= end) {\r\n        if (start === end) {\r\n            document.getElementsByClassName(\"bar\")[start].classList.add(\"sorted\");\r\n        }\r\n        return;\r\n    }\r\n    \r\n    let pivotIndex = await partition(start, end);\r\n    await quickSort(start, pivotIndex - 1);\r\n    await quickSort(pivotIndex + 1, end);\r\n}\r\n\r\nasync function partition(start, end) {\r\n    let bars = document.getElementsByClassName(\"bar\");\r\n    let pivotValue = values[end];\r\n    let pivotIndex = start;\r\n    bars[end].classList.add(\"pivot\");\r\n    \r\n    for (let i = start; i < end; i++) {\r\n        bars[i].classList.add(\"comparing\");\r\n        await sleep(300);\r\n        \r\n        if (values[i] < pivotValue) {\r\n            [values[i], values[pivotIndex]] = [values[pivotIndex], values[i]];\r\n            bars[i].style.height = values[i] * 3 + \"px\";\r\n            bars[pivotIndex].style.height = values[pivotIndex] * 3 + \"px\";\r\n            pivotIndex++;\r\n        }\r\n        \r\n        bars[i].classList.remove(\"comparing\");\r\n    }\r\n    \r\n    [values[pivotIndex], values[end]] = [values[end], values[pivotIndex]];\r\n    bars[pivotIndex].style.height = values[pivotIndex] * 3 + \"px\";\r\n    bars[end].style.height = values[end] * 3 + \"px\";\r\n    \r\n    bars[end].classList.remove(\"pivot\");\r\n    bars[pivotIndex].classList.add(\"sorted\");\r\n    await sleep(300);\r\n    \r\n    return pivotIndex;\r\n}\r\n\r\nfunction startQuickSort() {\r\n    createBars();\r\n    quickSort(0, values.length - 1);\r\n}\r\n\r\nfunction sleep(ms) {\r\n    return new Promise(resolve => setTimeout(resolve, ms));\r\n}\r\n\r\ncreateBars();\r\n",  Views = ran.Next(10,500), Votes=[new(){User = users[1] }, new() { User = users[2] }, new() { User = users[3] }, new() { User = users[4] }]},
+                new () { Algorithm=algorithms[2], User=users[0], Title = "Merge Sort Visualization", Html = " <div class=\"container\">\r\n        <h2>Merge Sort Visualization</h2>\r\n        <div id=\"array-container\"></div>\r\n        <button id=\"start-btn\">Start</button>\r\n    </div>", Css = "body {\r\n    font-family: Arial, sans-serif;\r\n    text-align: center;\r\n    background-color: #f4f4f4;\r\n}\r\n\r\n.container {\r\n    margin-top: 50px;\r\n}\r\n\r\n#array-container {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: flex-end;\r\n    height: 300px;\r\n    margin: 20px auto;\r\n}\r\n\r\n.bar {\r\n    width: 30px;\r\n    margin: 2px;\r\n    background-color: steelblue;\r\n    display: inline-block;\r\n    transition: height 0.3s ease-in-out;\r\n}\r\n\r\n.merging {\r\n    background-color: orange !important;\r\n}\r\n\r\n.sorted {\r\n    background-color: green !important;\r\n}\r\n\r\nbutton {\r\n    padding: 10px 20px;\r\n    font-size: 16px;\r\n    cursor: pointer;\r\n    border: none;\r\n    background-color: #007bff;\r\n    color: white;\r\n    border-radius: 5px;\r\n    margin-top: 20px;\r\n}\r\n\r\nbutton:hover {\r\n    background-color: #0056b3;\r\n}\r\n", Js = "document.getElementById(\"start-btn\").addEventListener(\"click\", startMergeSort);\r\n\r\nconst arrayContainer = document.getElementById(\"array-container\");\r\nlet values = [40, 10, 30, 80, 50, 70, 20, 60];\r\n\r\nfunction createBars() {\r\n    arrayContainer.innerHTML = \"\";\r\n    values.forEach((value) => {\r\n        let bar = document.createElement(\"div\");\r\n        bar.classList.add(\"bar\");\r\n        bar.style.height = value * 3 + \"px\";\r\n        arrayContainer.appendChild(bar);\r\n    });\r\n}\r\n\r\nasync function mergeSort(start, end) {\r\n    if (start >= end) return;\r\n\r\n    let mid = Math.floor((start + end) / 2);\r\n    await mergeSort(start, mid);\r\n    await mergeSort(mid + 1, end);\r\n    await merge(start, mid, end);\r\n}\r\n\r\nasync function merge(start, mid, end) {\r\n    let bars = document.getElementsByClassName(\"bar\");\r\n    let left = values.slice(start, mid + 1);\r\n    let right = values.slice(mid + 1, end + 1);\r\n    let i = 0, j = 0, k = start;\r\n\r\n    while (i < left.length && j < right.length) {\r\n        bars[k].classList.add(\"merging\");\r\n        await sleep(300);\r\n\r\n        if (left[i] < right[j]) {\r\n            values[k] = left[i++];\r\n        } else {\r\n            values[k] = right[j++];\r\n        }\r\n        bars[k].style.height = values[k] * 3 + \"px\";\r\n        bars[k].classList.remove(\"merging\");\r\n        k++;\r\n    }\r\n\r\n    while (i < left.length) {\r\n        bars[k].classList.add(\"merging\");\r\n        await sleep(300);\r\n        values[k] = left[i++];\r\n        bars[k].style.height = values[k] * 3 + \"px\";\r\n        bars[k].classList.remove(\"merging\");\r\n        k++;\r\n    }\r\n\r\n    while (j < right.length) {\r\n        bars[k].classList.add(\"merging\");\r\n        await sleep(300);\r\n        values[k] = right[j++];\r\n        bars[k].style.height = values[k] * 3 + \"px\";\r\n        bars[k].classList.remove(\"merging\");\r\n        k++;\r\n    }\r\n\r\n    if (end - start === values.length - 1) {\r\n        for (let x = start; x <= end; x++) {\r\n            bars[x].classList.add(\"sorted\");\r\n        }\r\n    }\r\n}\r\n\r\nfunction startMergeSort() {\r\n    createBars();\r\n    mergeSort(0, values.length - 1);\r\n}\r\n\r\nfunction sleep(ms) {\r\n    return new Promise(resolve => setTimeout(resolve, ms));\r\n}\r\n\r\ncreateBars();\r\n",  Views = ran.Next(10,500), Votes=[new(){User = users[0] }, new() { User = users[4] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[3], User=users[0], Title = "Insertion Sort Visualization", Html = " <div class=\"container\">\r\n        <h2>Insertion Sort Visualization</h2>\r\n        <div id=\"array-container\"></div>\r\n        <button id=\"start-btn\">Start</button>\r\n    </div>", Css = "body {\r\n    font-family: Arial, sans-serif;\r\n    text-align: center;\r\n    background-color: #f4f4f4;\r\n}\r\n\r\n.container {\r\n    margin-top: 50px;\r\n}\r\n\r\n#array-container {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: flex-end;\r\n    height: 300px;\r\n    margin: 20px auto;\r\n}\r\n\r\n.bar {\r\n    width: 30px;\r\n    margin: 2px;\r\n    background-color: steelblue;\r\n    display: inline-block;\r\n    transition: height 0.3s ease-in-out;\r\n}\r\n\r\n.inserting {\r\n    background-color: orange !important;\r\n}\r\n\r\n.sorted {\r\n    background-color: green !important;\r\n}\r\n\r\nbutton {\r\n    padding: 10px 20px;\r\n    font-size: 16px;\r\n    cursor: pointer;\r\n    border: none;\r\n    background-color: #007bff;\r\n    color: white;\r\n    border-radius: 5px;\r\n    margin-top: 20px;\r\n}\r\n\r\nbutton:hover {\r\n    background-color: #0056b3;\r\n}\r\n", Js = " <div class=\"container\">\r\n        <h2>Insertion Sort Visualization</h2>\r\n        <div id=\"array-container\"></div>\r\n        <button id=\"start-btn\">Start</button>\r\n    </div>;",  Views = ran.Next(10,500), Votes=[new(){User = users[4] }, new() { User = users[3] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[4], User=users[0], Title = "Selection Sort Visualization", Html = " <div class=\"container\">\r\n        <h2>Selection Sort Visualization</h2>\r\n        <div id=\"array-container\"></div>\r\n        <button id=\"start-btn\">Start</button>\r\n    </div>", Css = "h1 { color: red; }", Js = "document.getElementById(\"start-btn\").addEventListener(\"click\", startSelectionSort);\r\n\r\nconst arrayContainer = document.getElementById(\"array-container\");\r\nlet values = [40, 10, 30, 80, 50, 70, 20, 60];\r\n\r\nfunction createBars() {\r\n    arrayContainer.innerHTML = \"\";\r\n    values.forEach((value) => {\r\n        let bar = document.createElement(\"div\");\r\n        bar.classList.add(\"bar\");\r\n        bar.style.height = value * 3 + \"px\";\r\n        arrayContainer.appendChild(bar);\r\n    });\r\n}\r\n\r\nasync function selectionSort() {\r\n    let bars = document.getElementsByClassName(\"bar\");\r\n    for (let i = 0; i < values.length - 1; i++) {\r\n        let minIndex = i;\r\n        bars[i].classList.add(\"selected\");\r\n\r\n        for (let j = i + 1; j < values.length; j++) {\r\n            bars[j].classList.add(\"selected\");\r\n            await sleep(300);\r\n\r\n            if (values[j] < values[minIndex]) {\r\n                minIndex = j;\r\n            }\r\n            bars[j].classList.remove(\"selected\");\r\n        }\r\n\r\n        if (minIndex !== i) {\r\n            [values[i], values[minIndex]] = [values[minIndex], values[i]];\r\n            bars[i].style.height = values[i] * 3 + \"px\";\r\n            bars[minIndex].style.height = values[minIndex] * 3 + \"px\";\r\n        }\r\n\r\n        bars[i].classList.add(\"sorted\");\r\n    }\r\n\r\n    bars[values.length - 1].classList.add(\"sorted\");\r\n}\r\n\r\nfunction startSelectionSort() {\r\n    createBars();\r\n    selectionSort();\r\n}\r\n\r\nfunction sleep(ms) {\r\n    return new Promise(resolve => setTimeout(resolve, ms));\r\n}\r\n\r\ncreateBars();\r\n",  Views = ran.Next(10,500), Votes=[ new() { User = users[5] }] },
+                new () { Algorithm=algorithms[5], User=users[0], Title = "Heap Sort Visualization", Html = "<div class=\"container\">\r\n        <h2>Heap Sort Visualization</h2>\r\n        <div id=\"array-container\"></div>\r\n        <button id=\"start-btn\">Start</button>\r\n    </div>", Css = "body {\r\n    font-family: Arial, sans-serif;\r\n    text-align: center;\r\n    background-color: #f4f4f4;\r\n}\r\n\r\n.container {\r\n    margin-top: 50px;\r\n}\r\n\r\n#array-container {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: flex-end;\r\n    height: 300px;\r\n    margin: 20px auto;\r\n}\r\n\r\n.bar {\r\n    width: 30px;\r\n    margin: 2px;\r\n    background-color: steelblue;\r\n    display: inline-block;\r\n    transition: height 0.3s ease-in-out;\r\n}\r\n\r\n.swapping {\r\n    background-color: orange !important;\r\n}\r\n\r\n.sorted {\r\n    background-color: green !important;\r\n}\r\n\r\nbutton {\r\n    padding: 10px 20px;\r\n    font-size: 16px;\r\n    cursor: pointer;\r\n    border: none;\r\n    background-color: #007bff;\r\n    color: white;\r\n    border-radius: 5px;\r\n    margin-top: 20px;\r\n}\r\n\r\nbutton:hover {\r\n    background-color: #0056b3;\r\n}\r\n", Js = "document.getElementById(\"start-btn\").addEventListener(\"click\", startHeapSort);\r\n\r\nconst arrayContainer = document.getElementById(\"array-container\");\r\nlet values = [40, 10, 30, 80, 50, 70, 20, 60];\r\n\r\nfunction createBars() {\r\n    arrayContainer.innerHTML = \"\";\r\n    values.forEach((value) => {\r\n        let bar = document.createElement(\"div\");\r\n        bar.classList.add(\"bar\");\r\n        bar.style.height = value * 3 + \"px\";\r\n        arrayContainer.appendChild(bar);\r\n    });\r\n}\r\n\r\nasync function heapSort() {\r\n    let bars = document.getElementsByClassName(\"bar\");\r\n    let n = values.length;\r\n\r\n    for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {\r\n        await heapify(n, i);\r\n    }\r\n\r\n    for (let i = n - 1; i > 0; i--) {\r\n        [values[0], values[i]] = [values[i], values[0]];\r\n        bars[0].style.height = values[0] * 3 + \"px\";\r\n        bars[i].style.height = values[i] * 3 + \"px\";\r\n        bars[0].classList.add(\"swapping\");\r\n        bars[i].classList.add(\"swapping\");\r\n        await sleep(300);\r\n        bars[0].classList.remove(\"swapping\");\r\n        bars[i].classList.remove(\"swapping\");\r\n        await heapify(i, 0);\r\n        bars[i].classList.add(\"sorted\");\r\n    }\r\n\r\n    bars[0].classList.add(\"sorted\");\r\n}\r\n\r\nasync function heapify(n, i) {\r\n    let bars = document.getElementsByClassName(\"bar\");\r\n    let largest = i;\r\n    let left = 2 * i + 1;\r\n    let right = 2 * i + 2;\r\n\r\n    if (left < n && values[left] > values[largest]) {\r\n        largest = left;\r\n    }\r\n\r\n    if (right < n && values[right] > values[largest]) {\r\n        largest = right;\r\n    }\r\n\r\n    if (largest !== i) {\r\n        [values[i], values[largest]] = [values[largest], values[i]];\r\n        bars[i].style.height = values[i] * 3 + \"px\";\r\n        bars[largest].style.height = values[largest] * 3 + \"px\";\r\n        bars[i].classList.add(\"swapping\");\r\n        bars[largest].classList.add(\"swapping\");\r\n        await sleep(300);\r\n        bars[i].classList.remove(\"swapping\");\r\n        bars[largest].classList.remove(\"swapping\");\r\n        await heapify(n, largest);\r\n    }\r\n}\r\n\r\nfunction startHeapSort() {\r\n    createBars();\r\n    heapSort();\r\n}\r\n\r\nfunction sleep(ms) {\r\n    return new Promise(resolve => setTimeout(resolve, ms));\r\n}\r\n\r\ncreateBars();\r\n",  Views = ran.Next(10,500), Votes=[new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[6], User=users[0], Title = "Radix Sort Visualization", Html = "<div class=\"container\">\r\n        <h2>Radix Sort Visualization</h2>\r\n        <div id=\"array-container\"></div>\r\n        <button id=\"start-btn\">Start</button>\r\n    </div>", Css = "body {\r\n    font-family: Arial, sans-serif;\r\n    text-align: center;\r\n    background-color: #f4f4f4;\r\n}\r\n\r\n.container {\r\n    margin-top: 50px;\r\n}\r\n\r\n#array-container {\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: flex-end;\r\n    height: 300px;\r\n    margin: 20px auto;\r\n}\r\n\r\n.bar {\r\n    width: 30px;\r\n    margin: 2px;\r\n    background-color: steelblue;\r\n    display: inline-block;\r\n    transition: height 0.3s ease-in-out;\r\n}\r\n\r\n.sorting {\r\n    background-color: orange !important;\r\n}\r\n\r\n.sorted {\r\n    background-color: green !important;\r\n}\r\n\r\nbutton {\r\n    padding: 10px 20px;\r\n    font-size: 16px;\r\n    cursor: pointer;\r\n    border: none;\r\n    background-color: #007bff;\r\n    color: white;\r\n    border-radius: 5px;\r\n    margin-top: 20px;\r\n}\r\n\r\nbutton:hover {\r\n    background-color: #0056b3;\r\n}\r\n", Js = "document.getElementById(\"start-btn\").addEventListener(\"click\", startRadixSort);\r\n\r\nconst arrayContainer = document.getElementById(\"array-container\");\r\nlet values = [40, 10, 30, 80, 50, 70, 20, 60];\r\n\r\nfunction createBars() {\r\n    arrayContainer.innerHTML = \"\";\r\n    values.forEach((value) => {\r\n        let bar = document.createElement(\"div\");\r\n        bar.classList.add(\"bar\");\r\n        bar.style.height = value * 3 + \"px\";\r\n        arrayContainer.appendChild(bar);\r\n    });\r\n}\r\n\r\nasync function radixSort() {\r\n    let bars = document.getElementsByClassName(\"bar\");\r\n    let max = Math.max(...values);\r\n    let exp = 1;\r\n\r\n    while (max / exp > 1) {\r\n        await countingSort(exp);\r\n        exp *= 10;\r\n    }\r\n\r\n    for (let i = 0; i < values.length; i++) {\r\n        bars[i].classList.add(\"sorted\");\r\n    }\r\n}\r\n\r\nasync function countingSort(exp) {\r\n    let bars = document.getElementsByClassName(\"bar\");\r\n    let output = new Array(values.length);\r\n    let count = new Array(10).fill(0);\r\n\r\n    for (let i = 0; i < values.length; i++) {\r\n        let index = Math.floor(values[i] / exp) % 10;\r\n        count[index]++;\r\n    }\r\n\r\n    for (let i = 1; i < 10; i++) {\r\n        count[i] += count[i - 1];\r\n    }\r\n\r\n    for (let i = values.length - 1; i >= 0; i--) {\r\n        let index = Math.floor(values[i] / exp) % 10;\r\n        output[count[index] - 1] = values[i];\r\n        count[index]--;\r\n    }\r\n\r\n    for (let i = 0; i < values.length; i++) {\r\n        values[i] = output[i];\r\n        bars[i].style.height = values[i] * 3 + \"px\";\r\n        bars[i].classList.add(\"sorting\");\r\n        await sleep(300);\r\n        bars[i].classList.remove(\"sorting\");\r\n    }\r\n}\r\n\r\nfunction startRadixSort() {\r\n    createBars();\r\n    radixSort();\r\n}\r\n\r\nfunction sleep(ms) {\r\n    return new Promise(resolve => setTimeout(resolve, ms));\r\n}\r\n\r\ncreateBars();\r\n",  Views = ran.Next(10,500), Votes=[new(){User = users[0] }] },
+            ];
+
+            List<Visualization> visualizationsUser2 = [
+                new () { Algorithm=algorithms[0], User=users[1], Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[0] },  new() { User = users[3] }] },
+                new () { Algorithm=algorithms[1], User=users[1], Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');",  Views = ran.Next(10,500), Votes=[ new() { User = users[4] }] },
+                new () { Algorithm=algorithms[2], User=users[1], Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[1] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[3], User=users[1], Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[5] }, new() { User = users[0] }, new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[4], User=users[1], Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[0] }, new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[5], User=users[1], Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');",  Views = ran.Next(10,500), Votes=[ new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[6], User=users[1], Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[0] }, new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+
+            ];
+
+            List<Visualization> visualizationsUser3 = [
+                new () { Algorithm=algorithms[0], User=users[2],  Views = ran.Next(10,500),  Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');" , Votes=[new(){User = users[0] },  new() { User = users[3] }, new() { User = users[2] }]  },
+                new () { Algorithm=algorithms[1], User=users[2],  Views = ran.Next(10,500), Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[2], User=users[2],  Views = ran.Next(10,500), Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[3] }, new() { User = users[1] }] },
+                new () { Algorithm=algorithms[3], User=users[2],  Views = ran.Next(10,500), Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[3] }] },
+                new () { Algorithm=algorithms[4], User=users[2],  Views = ran.Next(10,500), Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[3] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[5], User=users[2],  Views = ran.Next(10,500), Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[3] }] },
+                new () { Algorithm=algorithms[6], User=users[2],  Views = ran.Next(10,500), Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');", Votes=[new(){User = users[2] },  new() { User = users[3] }, new() { User = users[4] }] },
+            ];
+
+            List<Visualization> visualizationsUser4 = [
+                new () { Algorithm=algorithms[0], User=users[3],  Views = ran.Next(10,500), Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[1], User=users[3],  Views = ran.Next(10,500), Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[2], User=users[3],  Views = ran.Next(10,500), Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[3], User=users[3],  Views = ran.Next(10,500), Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[4], User=users[3],  Views = ran.Next(10,500), Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[5], User=users[3],  Views = ran.Next(10,500), Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[6], User=users[3],  Views = ran.Next(10,500), Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+            ];
+
+            List<Visualization> visualizationsUser5 = [
+                new () { Algorithm=algorithms[0], User=users[4],  Views = ran.Next(10,500), Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[1], User=users[4],  Views = ran.Next(10,500), Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[2], User=users[4], Views = ran.Next(10,500), Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[3], User=users[4],  Views = ran.Next(10,500), Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[4], User=users[4],  Views = ran.Next(10,500), Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[5], User=users[4],  Views = ran.Next(10,500), Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[6], User=users[4],  Views = ran.Next(10,500), Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+            ];
+
+            List<Visualization> visualizationsUser6 = [
+                new () { Algorithm=algorithms[0], User=users[5],  Views = ran.Next(10,500), Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[1], User=users[5],  Views = ran.Next(10,500), Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[2], User=users[5],  Views = ran.Next(10,500), Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[3], User=users[5],  Views = ran.Next(10,500), Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[4], User=users[5],  Views = ran.Next(10,500), Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[5], User=users[5],  Views = ran.Next(10,500), Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[6], User=users[5],  Views = ran.Next(10,500), Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+            ];
+
+            var visualization = context.Set<Visualization>().FirstOrDefault();
+            if(visualization is null)
             {
-                context.Set<User>().Add(new User { Username = "bishal", Password = "$2a$12$ts.Zth9ExVhCADk8BSUDleKjduJGkziBy9w4XhG7Ptm8/iuIcp2iG", Role = "Admin" });
-                context.SaveChanges();
-            }
-
-            var tag = context.Set<Tag>().FirstOrDefault();
-            if (tag == null)
-            {
-                List<Tag> tags = [
-                    new Tag { Name = "Searching" },
-                    new Tag { Name = "Sorting" },
-                    new Tag { Name = "Graph" },
-                    new Tag { Name = "Tree" },
-                    new Tag { Name = "Dynamic Programming" },
-                    new Tag { Name = "Greedy" },
-                    new Tag { Name = "Backtracking" },
-                    new Tag { Name = "Bit Manipulation" },
-                    new Tag { Name = "Math" },
-                    new Tag { Name = "String" },
-                    new Tag { Name = "Array" },
-                    new Tag { Name = "Matrix" },
-                    new Tag { Name = "Hashing" },
-                    new Tag { Name = "Stack" },
-                    new Tag { Name = "Queue" },
-                    new Tag { Name = "Heap" },
-                    new Tag { Name = "Graph" },
-                    new Tag { Name = "Linked List" },
-                    new Tag { Name = "Binary Search" },
-                    new Tag { Name = "Two Pointer" },
-                    new Tag { Name = "Sliding Window" },
-                    new Tag { Name = "Divide and Conquer" },
-                    new Tag { Name = "Breadth First Search" },
-                    new Tag { Name = "Depth First Search" },
-                    new Tag { Name = "Topological Sort" },
-                    new Tag { Name = "Trie" },
-                    ];
-                context.Set<Tag>().AddRange(tags);
-                context.SaveChanges();
-            }
-
-            var semester = context.Set<Semester>().FirstOrDefault();
-            if (semester == null)
-            {
-                List<Semester> semesters = [];
-
-                Semesters.Add(new Semester
-                {
-                    Title = "I",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC109", Title = "Introduction to Information Technology", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC110", Title = "C Programming", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSCI11", Title = "Digital Logic", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "MTHI112", Title = "Mathematics I", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "PHY113", Title = "Physics", CreditHours = 3, FullMarks = 100 }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "II",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC160", Title = "Discrete Structure", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSCI61", Title = "Object Oriented Programming", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSCI62", Title = "Microprocessor", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "MTH163", Title = "Mathematics II", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "STA164", Title = "Statistics I", CreditHours = 3, FullMarks = 100 }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "III",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC206", Title = "Data Structure and Algorithms", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC207", Title = "Numerical Method", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC208", Title = "Computer Architecture", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC209", Title = "Computer Graphics", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "STA210", Title = "Statistics II", CreditHours = 3, FullMarks = 100 }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "IV",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC257", Title = "Theory of Computation", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC258", Title = "Computer Networks", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC259", Title = "Operating Systems", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC260", Title = "Database Management System", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC261", Title = "Artificial Intelligence", CreditHours = 3, FullMarks = 100 }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "V",
-                    TotalCreditHour = 18,
-                    TotalFullMark = 600,
-                    Courses =
-                    [
-                        new Course { Code = "CSC314", Title = "Design and Analysis of Algorithms", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC315", Title = "System Analysis and Design", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC316", Title = "Cryptography", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC317", Title = "Simulation and Modeling", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC318", Title = "Web Technology", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC319", Title = "Multimedia Computing", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC320", Title = "Wireless Networking", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC321", Title = "Image Processing", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC322", Title = "Knowledge Management", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC323", Title = "Society and Ethics in Information Technology", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC324", Title = "Microprocessor Based Design", CreditHours = 3, FullMarks = 100, IsElective = true }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "VI",
-                    TotalCreditHour = 18,
-                    TotalFullMark = 600,
-                    Courses =
-                    [
-                        new Course { Code = "CSC364", Title = "Software Engineering", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC365", Title = "Compiler Design and Construction", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC366", Title = "E-Governance", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC367", Title = "NET Centric Computing", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC368", Title = "Technical Writing", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC369", Title = "Applied Logic", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC370", Title = "E-commerce", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC371", Title = "Automation and Robotics", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC372", Title = "Neural Networks", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC373", Title = "Computer Hardware Design", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC374", Title = "Cognitive Science", CreditHours = 3, FullMarks = 100, IsElective = true }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "VII",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC409", Title = "Advanced Java Programming", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC410", Title = "Data Warehousing and Data Mining", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "MGT411", Title = "Principles of Management", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC412", Title = "Project Work", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "Elective III", Title = "Elective Course", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC413", Title = "Information Retrieval", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC414", Title = "Database Administration", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC415", Title = "Software Project Management", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC416", Title = "Network Security", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC417", Title = "Digital System Design", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "MGT418", Title = "International Marketing", CreditHours = 3, FullMarks = 100, IsElective = true }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "VIII",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses = 
-                    [
-                        new Course { Code = "CSC461", Title = "Advanced Database", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC462", Title = "Internship", CreditHours = 0, FullMarks = 200 },
-                        new Course { Code = "CSC463", Title = "Advanced Networking with IPV6", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC464", Title = "Distributed Networking", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC465", Title = "Game Technology", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC466", Title = "Distributed and Object Oriented Database", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC467", Title = "Introduction to Cloud Computing", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC468", Title = "Geographical Information System", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC469", Title = "Decision Support System and Expert System", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC470", Title = "Mobile Application Development", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC471", Title = "Real Time Systems", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC472", Title = "Network and System Administration", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC473", Title = "Embedded Systems Programming", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "MGT474", Title = "International Business Management", CreditHours = 3, FullMarks = 100, IsElective = true }
-                    ]
-                });
-
-                context.Set<Semester>().AddRange(semesters);
+                context.Set<Visualization>().AddRange(visualizationsUser1);
+                context.Set<Visualization>().AddRange(visualizationsUser2);
+                context.Set<Visualization>().AddRange(visualizationsUser3);
+                context.Set<Visualization>().AddRange(visualizationsUser4);
+                context.Set<Visualization>().AddRange(visualizationsUser5);
+                context.Set<Visualization>().AddRange(visualizationsUser6);
                 context.SaveChanges();
             }
         })
         .UseAsyncSeeding(async (context, _, cancellationToken) =>
         {
-            var testBlog = await context.Set<User>().FirstOrDefaultAsync(cancellationToken: cancellationToken);
-            if (testBlog == null)
+
+            List<User> users = [
+               new () { Username = "admin", Password = BCrypt.Net.BCrypt.HashPassword("admin", 12) , Role = "Admin" },
+                new () { Username = "john_doe", Password = BCrypt.Net.BCrypt.HashPassword("user", 12) , Role = "User" },
+                new () { Username = "hari", Password = BCrypt.Net.BCrypt.HashPassword("user", 12), Role = "User" },
+                new () { Username = "bishal", Password = BCrypt.Net.BCrypt.HashPassword("user", 12), Role = "User" },
+                new () { Username = "arun", Password = BCrypt.Net.BCrypt.HashPassword("user", 12), Role = "User" },
+                new () { Username = "madhuri", Password = BCrypt.Net.BCrypt.HashPassword("user", 12), Role = "User" },
+            ];
+
+            List<Algorithm> algorithms = [
+                new () { Title = "Bubble Sort"},
+                new () { Title = "Quick Sort"},
+                new () { Title = "Merge Sort"},
+                new () { Title = "Insertion Sort"},
+                new () { Title = "Selection Sort"},
+                new () { Title = "Heap Sort" },
+                new () { Title = "Radix Sort" },
+            ];
+
+            Random ran = new Random();
+
+            List<Visualization> visualizationsUser1 = [
+                new () { Algorithm=algorithms[0], User=users[0], Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');", Views = ran.Next(10,500) , Votes=[new(){User = users[0] }, new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[1], User=users[0], Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[1] }, new() { User = users[2] }, new() { User = users[3] }, new() { User = users[4] }]},
+                new () { Algorithm=algorithms[2], User=users[0], Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[0] }, new() { User = users[4] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[3], User=users[0], Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[4] }, new() { User = users[3] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[4], User=users[0], Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');",  Views = ran.Next(10,500), Votes=[ new() { User = users[5] }] },
+                new () { Algorithm=algorithms[5], User=users[0], Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');",  Views = ran.Next(10,500), Votes=[new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[6], User=users[0], Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[0] }] },
+            ];
+
+            List<Visualization> visualizationsUser2 = [
+                new () { Algorithm=algorithms[0], User=users[1], Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[0] },  new() { User = users[3] }] },
+                new () { Algorithm=algorithms[1], User=users[1], Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');",  Views = ran.Next(10,500), Votes=[ new() { User = users[4] }] },
+                new () { Algorithm=algorithms[2], User=users[1], Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[1] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[3], User=users[1], Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[5] }, new() { User = users[0] }, new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[4], User=users[1], Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[0] }, new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[5], User=users[1], Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');",  Views = ran.Next(10,500), Votes=[ new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+                new () { Algorithm=algorithms[6], User=users[1], Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');",  Views = ran.Next(10,500), Votes=[new(){User = users[0] }, new() { User = users[1] }, new() { User = users[2] }, new() { User = users[4] }] },
+
+            ];
+
+            List<Visualization> visualizationsUser3 = [
+                new () { Algorithm=algorithms[0], User=users[2],  Views = ran.Next(10,500),  Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');" , Votes=[new(){User = users[0] },  new() { User = users[3] }, new() { User = users[2] }]  },
+                new () { Algorithm=algorithms[1], User=users[2],  Views = ran.Next(10,500), Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[2], User=users[2],  Views = ran.Next(10,500), Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[3] }, new() { User = users[1] }] },
+                new () { Algorithm=algorithms[3], User=users[2],  Views = ran.Next(10,500), Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[3] }] },
+                new () { Algorithm=algorithms[4], User=users[2],  Views = ran.Next(10,500), Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[3] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[5], User=users[2],  Views = ran.Next(10,500), Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');", Votes=[new(){User = users[0] },  new() { User = users[3] }] },
+                new () { Algorithm=algorithms[6], User=users[2],  Views = ran.Next(10,500), Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');", Votes=[new(){User = users[2] },  new() { User = users[3] }, new() { User = users[4] }] },
+            ];
+
+            List<Visualization> visualizationsUser4 = [
+                new () { Algorithm=algorithms[0], User=users[3],  Views = ran.Next(10,500), Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[1], User=users[3],  Views = ran.Next(10,500), Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[2], User=users[3],  Views = ran.Next(10,500), Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[3], User=users[3],  Views = ran.Next(10,500), Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[4], User=users[3],  Views = ran.Next(10,500), Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[5], User=users[3],  Views = ran.Next(10,500), Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[6], User=users[3],  Views = ran.Next(10,500), Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+            ];
+
+            List<Visualization> visualizationsUser5 = [
+                new () { Algorithm=algorithms[0], User=users[4],  Views = ran.Next(10,500), Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[1], User=users[4],  Views = ran.Next(10,500), Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[2], User=users[4], Views = ran.Next(10,500), Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[3], User=users[4],  Views = ran.Next(10,500), Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[4], User=users[4],  Views = ran.Next(10,500), Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[5], User=users[4],  Views = ran.Next(10,500), Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[6], User=users[4],  Views = ran.Next(10,500), Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+            ];
+
+            List<Visualization> visualizationsUser6 = [
+                new () { Algorithm=algorithms[0], User=users[5],  Views = ran.Next(10,500), Title = "Bubble Sort Visualization", Html = "<h1>Bubble Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Bubble Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[1], User=users[5],  Views = ran.Next(10,500), Title = "Quick Sort Visualization", Html = "<h1>Quick Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Quick Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[2], User=users[5],  Views = ran.Next(10,500), Title = "Merge Sort Visualization", Html = "<h1>Merge Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Merge Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[3], User=users[5],  Views = ran.Next(10,500), Title = "Insertion Sort Visualization", Html = "<h1>Insertion Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Insertion Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[4], User=users[5],  Views = ran.Next(10,500), Title = "Selection Sort Visualization", Html = "<h1>Selection Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Selection Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[5], User=users[5],  Views = ran.Next(10,500), Title = "Heap Sort Visualization", Html = "<h1>Heap Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Heap Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+                new () { Algorithm=algorithms[6], User=users[5],  Views = ran.Next(10,500), Title = "Radix Sort Visualization", Html = "<h1>Radix Sort Visualization</h1>", Css = "h1 { color: red; }", Js = "console.log('Radix Sort Visualization');",  Votes=[new(){User = users[0] },  new() { User = users[5] }, new() { User = users[2] }] },
+            ];
+
+            var visualization = context.Set<Visualization>().FirstOrDefault();
+            if (visualization is null)
             {
-                await context.Set<User>().AddAsync(new User { Username = "bishal", Password = "$2a$12$ts.Zth9ExVhCADk8BSUDleKjduJGkziBy9w4XhG7Ptm8/iuIcp2iG", Role = "Admin" }, cancellationToken);
+                await context.Set<Visualization>().AddRangeAsync(visualizationsUser1, cancellationToken);
+                await context.Set<Visualization>().AddRangeAsync(visualizationsUser2, cancellationToken);
+                await context.Set<Visualization>().AddRangeAsync(visualizationsUser3, cancellationToken);
+                await context.Set<Visualization>().AddRangeAsync(visualizationsUser4, cancellationToken);
+                await context.Set<Visualization>().AddRangeAsync(visualizationsUser5, cancellationToken);
+                await context.Set<Visualization>().AddRangeAsync(visualizationsUser6, cancellationToken);
                 await context.SaveChangesAsync(cancellationToken);
             }
-
-            var tag = await context.Set<Tag>().FirstOrDefaultAsync(cancellationToken: cancellationToken);
-            if (tag == null)
-            {
-                List<Tag> tags = [
-                    new Tag { Name = "Searching" },
-                    new Tag { Name = "Sorting" },
-                    new Tag { Name = "Graph" },
-                    new Tag { Name = "Tree" },
-                    new Tag { Name = "Dynamic Programming" },
-                    new Tag { Name = "Greedy" },
-                    new Tag { Name = "Backtracking" },
-                    new Tag { Name = "Bit Manipulation" },
-                    new Tag { Name = "Math" },
-                    new Tag { Name = "String" },
-                    new Tag { Name = "Array" },
-                    new Tag { Name = "Matrix" },
-                    new Tag { Name = "Hashing" },
-                    new Tag { Name = "Stack" },
-                    new Tag { Name = "Queue" },
-                    new Tag { Name = "Heap" },
-                    new Tag { Name = "Graph" },
-                    new Tag { Name = "Linked List" },
-                    new Tag { Name = "Binary Search" },
-                    new Tag { Name = "Two Pointer" },
-                    new Tag { Name = "Sliding Window" },
-                    new Tag { Name = "Divide and Conquer" },
-                    new Tag { Name = "Breadth First Search" },
-                    new Tag { Name = "Depth First Search" },
-                    new Tag { Name = "Topological Sort" },
-                    new Tag { Name = "Trie" },
-                    ];
-                await context.Set<Tag>().AddRangeAsync(tags, cancellationToken);
-                await context.SaveChangesAsync(cancellationToken);
-            }
-
-            var semester = await context.Set<Semester>().FirstOrDefaultAsync(cancellationToken: cancellationToken);
-            if (semester == null)
-            {
-                List<Semester> semesters = [];
-
-                Semesters.Add(new Semester
-                {
-                    Title = "I",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC109", Title = "Introduction to Information Technology", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC110", Title = "C Programming", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSCI11", Title = "Digital Logic", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "MTHI112", Title = "Mathematics I", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "PHY113", Title = "Physics", CreditHours = 3, FullMarks = 100 }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "II",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC160", Title = "Discrete Structure", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSCI61", Title = "Object Oriented Programming", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSCI62", Title = "Microprocessor", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "MTH163", Title = "Mathematics II", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "STA164", Title = "Statistics I", CreditHours = 3, FullMarks = 100 }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "III",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC206", Title = "Data Structure and Algorithms", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC207", Title = "Numerical Method", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC208", Title = "Computer Architecture", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC209", Title = "Computer Graphics", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "STA210", Title = "Statistics II", CreditHours = 3, FullMarks = 100 }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "IV",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC257", Title = "Theory of Computation", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC258", Title = "Computer Networks", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC259", Title = "Operating Systems", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC260", Title = "Database Management System", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC261", Title = "Artificial Intelligence", CreditHours = 3, FullMarks = 100 }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "V",
-                    TotalCreditHour = 18,
-                    TotalFullMark = 600,
-                    Courses =
-                    [
-                        new Course { Code = "CSC314", Title = "Design and Analysis of Algorithms", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC315", Title = "System Analysis and Design", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC316", Title = "Cryptography", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC317", Title = "Simulation and Modeling", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC318", Title = "Web Technology", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC319", Title = "Multimedia Computing", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC320", Title = "Wireless Networking", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC321", Title = "Image Processing", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC322", Title = "Knowledge Management", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC323", Title = "Society and Ethics in Information Technology", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC324", Title = "Microprocessor Based Design", CreditHours = 3, FullMarks = 100, IsElective = true }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "VI",
-                    TotalCreditHour = 18,
-                    TotalFullMark = 600,
-                    Courses =
-                    [
-                        new Course { Code = "CSC364", Title = "Software Engineering", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC365", Title = "Compiler Design and Construction", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC366", Title = "E-Governance", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC367", Title = "NET Centric Computing", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC368", Title = "Technical Writing", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC369", Title = "Applied Logic", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC370", Title = "E-commerce", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC371", Title = "Automation and Robotics", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC372", Title = "Neural Networks", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC373", Title = "Computer Hardware Design", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC374", Title = "Cognitive Science", CreditHours = 3, FullMarks = 100, IsElective = true }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "VII",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC409", Title = "Advanced Java Programming", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC410", Title = "Data Warehousing and Data Mining", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "MGT411", Title = "Principles of Management", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC412", Title = "Project Work", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "Elective III", Title = "Elective Course", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC413", Title = "Information Retrieval", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC414", Title = "Database Administration", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC415", Title = "Software Project Management", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC416", Title = "Network Security", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC417", Title = "Digital System Design", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "MGT418", Title = "International Marketing", CreditHours = 3, FullMarks = 100, IsElective = true }
-                    ]
-                });
-                Semesters.Add(new Semester
-                {
-                    Title = "VIII",
-                    TotalCreditHour = 15,
-                    TotalFullMark = 500,
-                    Courses =
-                    [
-                        new Course { Code = "CSC461", Title = "Advanced Database", CreditHours = 3, FullMarks = 100 },
-                        new Course { Code = "CSC462", Title = "Internship", CreditHours = 0, FullMarks = 200 },
-                        new Course { Code = "CSC463", Title = "Advanced Networking with IPV6", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC464", Title = "Distributed Networking", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC465", Title = "Game Technology", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC466", Title = "Distributed and Object Oriented Database", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC467", Title = "Introduction to Cloud Computing", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC468", Title = "Geographical Information System", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC469", Title = "Decision Support System and Expert System", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC470", Title = "Mobile Application Development", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC471", Title = "Real Time Systems", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC472", Title = "Network and System Administration", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "CSC473", Title = "Embedded Systems Programming", CreditHours = 3, FullMarks = 100, IsElective = true },
-                        new Course { Code = "MGT474", Title = "International Business Management", CreditHours = 3, FullMarks = 100, IsElective = true }
-                    ]
-                });
-
-                await context.Set<Semester>().AddRangeAsync(semesters, cancellationToken);
-                await context.SaveChangesAsync(cancellationToken);
-            }
+            
         });
-
-    }
 }

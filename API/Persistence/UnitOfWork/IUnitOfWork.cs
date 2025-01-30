@@ -6,7 +6,6 @@ namespace API.Persistence.UnitOfWork;
 public interface IUnitOfWork : IDisposable
 {
     IUserRepo Users { get; }
-    ICourseRepo Courses { get; }
     ITagRepo Tags { get; }
     IAlgorithmRepo Algorithms { get; }
     IVisualizationRepo Visualizations { get; }

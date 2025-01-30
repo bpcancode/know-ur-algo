@@ -1,5 +1,5 @@
 ﻿using API.Dtos;
-
+using API.Dtos.Algorithm;
 using API.Dtos.Visualizations;
 using API.Persistence.Entities;
 using API.Persistence.UnitOfWork;
@@ -32,9 +32,15 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
         await _wof.SaveChangesAsync();
         return new ResultDto(true, "Visualization created successfully");
     }
-    public async Task<ResultWithDataDto<VisualizationDto>> GetVisualization(int id)
+    public async Task<ResultWithDataDto<VisualizationDto>> GetVisualization(int id, int userId=0 )
     {
-        var visualization = await _wof.Visualizations.FindAsync(id);
+        var que = _wof.Visualizations.GetQueryable();
+        var visualization = await que
+            .Include(x => x.User)
+            .Include(x => x.Votes)
+            .Include(x => x.Algorithm)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
         if (visualization is null) return new ResultWithDataDto<VisualizationDto>(false, default, "Visualization not found");
         var dto = new VisualizationDto
         {
@@ -46,12 +52,14 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
             Css = visualization.Css,
             Html = visualization.Html,
             VoteCount = visualization.Votes.Count,
+            IsVoted = visualization.Votes.Any(x => x.UserId == userId),
+            Views = visualization.Views,
         };
         visualization.Views++;
         await _wof.SaveChangesAsync();
         return new ResultWithDataDto<VisualizationDto>(true, dto, null);
     }
-    public async Task<ResultWithDataDto<List<VisualizationDto>>> GetVisualizations(VisualizationFilters filters)
+    public async Task<ResultWithDataDto<List<VisualizationDto>>> GetVisualizations(VisualizationFilters filters, int userId=0)
     {
         
         var query = _wof.Visualizations.GetQueryable();
@@ -63,7 +71,9 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
         if (filters.ViewCountGreaterThan.HasValue) query = query.Where(x => x.Views >= filters.ViewCountGreaterThan);
         if (filters.ViewCountLessThan.HasValue) query = query.Where(x => x.Views <= filters.ViewCountLessThan);
         if (filters.AlgorithmId.HasValue) query = query.Where(x => x.AlgorithmId == filters.AlgorithmId);
-        if (filters.IsTrending.HasValue) query = OrderByTrend(query);
+        if (filters.IsViewsDecending.HasValue) query = query.OrderByDescending(x => x.Views);
+        if (filters.IsVoteDecending.HasValue) query = query.OrderByDescending(x => x.Votes.Count);
+
 
         var res = await query.Select(x => new VisualizationDto
         {
@@ -75,18 +85,31 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
             Css = x.Css,
             Html = x.Html,
             VoteCount = x.Votes.Count,
+            Views = x.Views,
+            IsVoted = x.Votes.Any(x => x.UserId == userId),
+            TrendScore = (x.Views / 15000) + (x.Votes.Count * 200) + (DateTime.Now - x.CreatedAt).Days / 50,
         }).ToListAsync();
+        if (filters.IsTrending.HasValue) res = res.OrderByDescending(x => x.TrendScore).ToList();
+
         return new ResultWithDataDto<List<VisualizationDto>>(true, res, null);
     }
-    private IQueryable<Visualization> OrderByTrend(IQueryable<Visualization> query)
+
+    public async Task<ResultDto> LikeVisualization(int visId, int userId)
     {
-        int a_views = 15000;
-        int b_likes = 200;
-        int c_age = 50;
+        var vis = await _wof.Visualizations.FindAsync(visId);
+        if (vis is null) return new ResultDto(false, "Visulization not found");
 
-        query = query.OrderByDescending(x => (x.Views / a_views) + (x.Votes.Count * b_likes) + (DateTime.Now - x.CreatedAt).Days / c_age);
+        var user = await _wof.Users.FindAsync(userId);
+        if (user is null) return new ResultDto(false, "User not found");
 
-        return query;
+        vis.Votes = vis.Votes.Where(x => x.UserId != userId).ToList();
+
+        vis.Votes.Add(new Vote
+        {
+            User = user,
+        });
+        await _wof.SaveChangesAsync();
+        return new ResultDto(true, "Vote added successfully");
     }
 
 }
