@@ -25,6 +25,9 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
             Algorithm = algo,
             Title = dto.Title,
             User = user,
+            Js = dto.Js,
+            Html = dto.Html,
+            Css = dto.Css,
             CreatedAt = DateTime.Now,
         };
 
@@ -54,6 +57,7 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
             VoteCount = visualization.Votes.Count,
             IsVoted = visualization.Votes.Any(x => x.UserId == userId),
             Views = visualization.Views,
+            Algorithm = visualization.Algorithm.Title,
         };
         visualization.Views++;
         await _wof.SaveChangesAsync();
@@ -86,6 +90,7 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
             Html = x.Html,
             VoteCount = x.Votes.Count,
             Views = x.Views,
+            Algorithm = x.Algorithm.Title,
             IsVoted = x.Votes.Any(x => x.UserId == userId),
             TrendScore = (x.Views / 15000) + (x.Votes.Count * 200) + (DateTime.Now - x.CreatedAt).Days / 50,
         }).ToListAsync();
@@ -102,12 +107,14 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
         var user = await _wof.Users.FindAsync(userId);
         if (user is null) return new ResultDto(false, "User not found");
 
-        vis.Votes = vis.Votes.Where(x => x.UserId != userId).ToList();
-
-        vis.Votes.Add(new Vote
+        var vote = vis.Votes.FirstOrDefault(x => x.UserId == userId);
+        if(vote is null)
         {
-            User = user,
-        });
+            vis.Votes.Add(new Vote { User = user, });
+        } else
+        {
+            vis.Votes.Remove(vote);
+        }
         await _wof.SaveChangesAsync();
         return new ResultDto(true, "Vote added successfully");
     }

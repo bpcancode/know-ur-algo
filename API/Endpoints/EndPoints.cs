@@ -23,18 +23,22 @@ public static class EndPoints
 
         // Visualization Apis
         endpoints.MapGet("api/visualization", async (IVisualizationService service, [AsParameters] VisualizationFilters filters, ClaimsPrincipal user)
-            => TypedResults.Ok(await service.GetVisualizations(filters, int.Parse(user.FindFirstValue(ClaimTypes.Email) ?? "0"))));
+            => TypedResults.Ok(await service.GetVisualizations(filters, int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0"))));
         
         endpoints.MapPost("api/visualization", 
             [Authorize] async (VisualizationCreateDto dto , IVisualizationService service, ClaimsPrincipal user) 
-            => TypedResults.Ok(await service.CreateVisualization(dto, int.Parse(user.FindFirstValue(ClaimTypes.Email) ?? "0"))));
+            => TypedResults.Ok(await service.CreateVisualization(dto, int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0"))));
+
+        endpoints.MapPost("api/visualization/{id}/like",
+            [Authorize] async (int id, IVisualizationService service, ClaimsPrincipal user)
+            => TypedResults.Ok(await service.LikeVisualization(id, int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0"))));
 
         endpoints.MapPost("api/visualization/{id}",
             [Authorize] async (int id, IVisualizationService service, ClaimsPrincipal user)
-            => TypedResults.Ok(await service.LikeVisualization(id, int.Parse(user.FindFirstValue(ClaimTypes.Email) ?? "0"))));
+            => TypedResults.Ok(await service.LikeVisualization(id, int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0"))));
 
         endpoints.MapGet("api/visualization/{id}", async (IVisualizationService service, int id, ClaimsPrincipal user) 
-            => TypedResults.Ok(await service.GetVisualization(id, int.Parse(user.FindFirstValue(ClaimTypes.Email) ?? "0"))));
+            => TypedResults.Ok(await service.GetVisualization(id, int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0"))));
 
         // Algorithm endpoints
         endpoints.MapGet("api/algorithm", async (IAlgorithmService algorithmService) =>

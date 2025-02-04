@@ -13,4 +13,5 @@ public class VisualizationDto
     public long VoteCount { get; set; }
     public bool IsVoted { get; set; }
     public decimal TrendScore { get; set; }
+    public string Algorithm { get; set; }
 }
