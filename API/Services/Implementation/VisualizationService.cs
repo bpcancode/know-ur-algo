@@ -92,7 +92,7 @@ public class VisualizationService(IUnitOfWork wof) : IVisualizationService
             Views = x.Views,
             Algorithm = x.Algorithm.Title,
             IsVoted = x.Votes.Any(x => x.UserId == userId),
-            TrendScore = (x.Views / 15000) + (x.Votes.Count * 200) + (DateTime.Now - x.CreatedAt).Days / 50,
+            TrendScore = (x.Views / 1500) + (x.Votes.Count * 200) + (DateTime.Now - x.CreatedAt).Days / 50,
         }).ToListAsync();
         if (filters.IsTrending.HasValue) res = res.OrderByDescending(x => x.TrendScore).ToList();
 
